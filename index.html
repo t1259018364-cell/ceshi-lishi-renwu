@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>测测你的灵魂对应哪位中国历史人物</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        --paper:#f4eddc;
+        --paper-2:#ece1c8;
+        --card:#faf5e9;
+        --ink:#23201a;
+        --ink-soft:#57503f;
+        --ink-faint:#8a8069;
+        --cinnabar:#9e2b25;
+        --cinnabar-deep:#7e1f1a;
+        --gold:#b08a3c;
+        --gold-soft:#cdb27a;
+        --pine:#33523f;
+        --line:#d8cba6;
+        --line-soft:#e4d9bd;
+        --shadow:0 18px 44px rgba(74,58,28,.16);
+        --radius:14px;
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --paper:#171a17;
+          --paper-2:#1d201c;
+          --card:#22251f;
+          --ink:#ece4d0;
+          --ink-soft:#c4bba2;
+          --ink-faint:#938a70;
+          --cinnabar:#c0453c;
+          --cinnabar-deep:#a3352e;
+          --gold:#c9a558;
+          --gold-soft:#a8894e;
+          --pine:#7fae8f;
+          --line:#3d3a2e;
+          --line-soft:#333126;
+          --shadow:0 18px 44px rgba(0,0,0,.5);
+        }
+      }
+      *{box-sizing:border-box;}
+      html{-webkit-text-size-adjust:100%;}
+      body{
+        margin:0;
+        font-family:"Noto Serif SC","Songti SC","STSong",serif;
+        color:var(--ink);
+        background:
+          radial-gradient(1100px 500px at 85% -10%, rgba(176,138,60,.14), transparent 60%),
+          radial-gradient(900px 480px at -10% 110%, rgba(51,82,63,.12), transparent 60%),
+          var(--paper);
+        min-height:100vh;
+        line-height:1.75;
+      }
+      /* faint paper grain */
+      body::before{
+        content:""; position:fixed; inset:0; pointer-events:none; opacity:.5; z-index:0;
+        background-image:radial-gradient(rgba(120,100,60,.05) 1px, transparent 1px);
+        background-size:5px 5px;
+      }
+      button{font-family:inherit; cursor:pointer; min-height:44px;}
+      .wrap{position:relative; z-index:1; max-width:680px; margin:0 auto; padding:28px 18px 56px;}
+      @media (min-width:900px){ .wrap{max-width:720px; padding-top:44px;} }
+
+      .screen{display:none;}
+      .screen.active{display:block; animation:screenIn .45s ease both;}
+      @keyframes screenIn{from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:none;}}
+      @media (prefers-reduced-motion: reduce){
+        .screen.active{animation:none;}
+        *{transition:none !important;}
+      }
+
+      /* ---------- seal & ornaments ---------- */
+      .seal{
+        display:inline-flex; align-items:center; justify-content:center;
+        background:var(--cinnabar); color:#fdf6e3;
+        font-family:"Ma Shan Zheng",serif;
+        border-radius:6px; box-shadow:inset 0 0 0 2px rgba(253,246,227,.35), 0 4px 10px rgba(126,31,26,.3);
+        transform:rotate(-3deg); user-select:none;
+      }
+      .rule{display:flex; align-items:center; gap:12px; color:var(--gold); margin:18px auto; max-width:340px;}
+      .rule::before,.rule::after{content:""; flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--gold-soft),transparent);}
+      .rule span{font-size:13px; letter-spacing:.5em; text-indent:.5em;}
+
+      /* ---------- home ---------- */
+      .hero{text-align:center; padding:18px 6px 6px;}
+      .hero .seal{width:58px; height:58px; font-size:30px; margin-bottom:20px;}
+      .hero-kicker{color:var(--cinnabar); font-weight:700; letter-spacing:.42em; text-indent:.42em; font-size:13px; margin:0 0 14px;}
+      .hero h1{
+        font-family:"Ma Shan Zheng","Noto Serif SC",serif; font-weight:400;
+        font-size:clamp(38px,9.5vw,58px); line-height:1.28; margin:0 0 8px; letter-spacing:.02em;
+      }
+      .hero h1 em{font-style:normal; color:var(--cinnabar);}
+      .hero-sub{color:var(--ink-soft); font-size:16px; margin:10px auto 0; max-width:30em;}
+      .hero-meta{display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin:22px 0 6px;}
+      .hero-meta span{
+        border:1px solid var(--line); background:var(--card); border-radius:999px;
+        padding:6px 14px; font-size:13px; color:var(--ink-soft);
+      }
+      .btn-main{
+        display:inline-block; margin-top:26px; border:none; border-radius:10px;
+        background:linear-gradient(180deg,var(--cinnabar),var(--cinnabar-deep));
+        color:#fdf6e3; font-size:19px; font-weight:700; letter-spacing:.28em; text-indent:.28em;
+        padding:15px 52px; box-shadow:0 10px 24px rgba(126,31,26,.32);
+        transition:transform .15s ease, box-shadow .15s ease;
+      }
+      .btn-main:hover{transform:translateY(-2px); box-shadow:0 14px 28px rgba(126,31,26,.36);}
+      .btn-main:active{transform:translateY(0);}
+      .hero-note{margin-top:16px; font-size:13px; color:var(--ink-faint);}
+
+      .scroll-card{
+        margin:34px auto 0; background:var(--card); border:1px solid var(--line);
+        border-radius:var(--radius); box-shadow:var(--shadow); padding:26px 22px; text-align:left;
+      }
+      .scroll-card h2{font-size:18px; margin:0 0 10px; letter-spacing:.12em;}
+      .scroll-card h2::before{content:"◆"; color:var(--cinnabar); font-size:12px; margin-right:8px; vertical-align:2px;}
+      .scroll-card p{margin:0; color:var(--ink-soft); font-size:15px;}
+
+      .figures{margin:30px auto 0;}
+      .figures h2{text-align:center; font-size:16px; letter-spacing:.3em; text-indent:.3em; color:var(--ink-soft); margin:0 0 16px; font-weight:600;}
+      .fig-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px;}
+      @media (min-width:640px){ .fig-grid{grid-template-columns:repeat(3,1fr);} }
+      .fig{
+        background:var(--card); border:1px solid var(--line-soft); border-radius:10px;
+        padding:14px 12px; text-align:center;
+      }
+      .fig b{display:block; font-family:"Ma Shan Zheng",serif; font-weight:400; font-size:23px; letter-spacing:.06em;}
+      .fig i{font-style:normal; display:inline-block; margin-top:4px; font-size:12px; color:var(--cinnabar); border:1px solid currentColor; border-radius:4px; padding:0 7px; line-height:1.7;}
+      .fig small{display:block; margin-top:6px; color:var(--ink-faint); font-size:12.5px; line-height:1.6;}
+      .disclaimer{margin:30px auto 0; text-align:center; font-size:12.5px; color:var(--ink-faint); max-width:32em;}
+
+      /* ---------- quiz ---------- */
+      .quiz-top{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:10px;}
+      .quiz-count{font-size:14px; color:var(--ink-soft); letter-spacing:.08em;}
+      .quiz-count b{font-size:22px; color:var(--cinnabar); font-weight:900;}
+      .quiz-cat{font-size:12.5px; color:var(--gold); letter-spacing:.24em; font-weight:700;}
+      .progress{height:8px; border-radius:99px; background:var(--paper-2); border:1px solid var(--line-soft); overflow:hidden;}
+      .progress i{display:block; height:100%; width:0; border-radius:99px;
+        background:linear-gradient(90deg,var(--gold),var(--cinnabar)); transition:width .45s ease;}
+      .q-card{
+        margin-top:22px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+        box-shadow:var(--shadow); padding:28px 22px 24px;
+      }
+      .q-card.swap{animation:qIn .38s ease both;}
+      @keyframes qIn{from{opacity:0; transform:translateX(26px);} to{opacity:1; transform:none;}}
+      .q-num{font-family:"Ma Shan Zheng",serif; color:var(--gold-soft); font-size:19px; letter-spacing:.2em;}
+      .q-text{font-size:clamp(19px,4.6vw,22px); font-weight:700; line-height:1.6; margin:8px 0 22px;}
+      .opts{display:grid; gap:11px;}
+      .opt{
+        display:flex; align-items:flex-start; gap:13px; text-align:left; width:100%;
+        background:var(--paper); border:1.5px solid var(--line); border-radius:11px;
+        padding:14px 15px; font-size:16px; line-height:1.65; color:var(--ink);
+        transition:border-color .15s ease, background .15s ease, transform .1s ease;
+      }
+      .opt:hover{border-color:var(--gold);}
+      .opt:active{transform:scale(.99);}
+      .opt .mark{
+        flex:none; width:27px; height:27px; margin-top:1px; border-radius:50%;
+        border:1.5px solid var(--gold); color:var(--gold);
+        display:flex; align-items:center; justify-content:center;
+        font-size:13.5px; font-weight:700; font-family:"Noto Serif SC",serif;
+      }
+      .opt.picked{background:rgba(158,43,37,.07); border-color:var(--cinnabar);}
+      .opt.picked .mark{background:var(--cinnabar); border-color:var(--cinnabar); color:#fdf6e3;}
+      .quiz-nav{display:flex; justify-content:space-between; align-items:center; margin-top:18px;}
+      .btn-ghost{
+        background:none; border:1px solid var(--line); color:var(--ink-soft); border-radius:9px;
+        padding:9px 20px; font-size:14.5px; letter-spacing:.1em;
+      }
+      .btn-ghost:disabled{opacity:.35; cursor:default;}
+      .quiz-tip{font-size:12.5px; color:var(--ink-faint);}
+
+      /* ---------- result ---------- */
+      .result-frame{
+        position:relative; background:var(--card); border:2px solid var(--gold-soft); border-radius:18px;
+        box-shadow:var(--shadow); padding:8px;
+      }
+      .result-inner{
+        border:1px solid var(--line); border-radius:12px; padding:34px 24px 30px; text-align:center;
+        background:
+          radial-gradient(420px 200px at 50% -60px, rgba(176,138,60,.13), transparent 70%),
+          var(--card);
+      }
+      .result-kicker{color:var(--cinnabar); font-size:13px; font-weight:700; letter-spacing:.4em; text-indent:.4em; margin:0;}
+      .result-type{
+        display:inline-block; margin-top:14px; font-size:13.5px; letter-spacing:.2em;
+        color:var(--pine); border:1px solid var(--pine); border-radius:999px; padding:3px 15px;
+      }
+      .result-name{
+        font-family:"Ma Shan Zheng","Noto Serif SC",serif; font-weight:400;
+        font-size:clamp(56px,15vw,84px); line-height:1.15; margin:10px 0 2px; letter-spacing:.04em;
+      }
+      .result-era{color:var(--ink-faint); font-size:14px; letter-spacing:.3em; margin:0;}
+      .match-line{margin:16px 0 0; font-size:15px; color:var(--ink-soft);}
+      .match-line b{color:var(--cinnabar); font-size:24px; font-weight:900; margin:0 2px;}
+      .tagline{
+        margin:20px auto 0; max-width:24em; font-size:18.5px; font-weight:700; line-height:1.7;
+        color:var(--ink);
+      }
+      .tagline::before,.tagline::after{content:"「"; color:var(--gold); font-weight:400;}
+      .tagline::after{content:"」";}
+      .result-quote{margin:12px auto 0; color:var(--ink-faint); font-size:14px; font-style:normal;}
+      .result-seal{position:absolute; top:20px; right:20px; width:46px; height:46px; font-size:15px; line-height:1.25; padding:4px;}
+      .traits{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:22px 0 4px;}
+      .traits span{background:var(--paper); border:1px solid var(--line); border-radius:999px; padding:5px 14px; font-size:13.5px; color:var(--ink-soft);}
+      .r-block{text-align:left; margin-top:22px; border-top:1px dashed var(--line); padding-top:18px;}
+      .r-block h3{margin:0 0 7px; font-size:15.5px; letter-spacing:.14em; color:var(--cinnabar);}
+      .r-block h3 .n{font-family:"Ma Shan Zheng",serif; font-weight:400; color:var(--gold); margin-right:8px; font-size:17px;}
+      .r-block p{margin:0; font-size:15px; color:var(--ink-soft); line-height:1.85;}
+      .dims{margin-top:24px; text-align:left; border-top:1px dashed var(--line); padding-top:18px;}
+      .dims h3{margin:0 0 12px; font-size:15.5px; letter-spacing:.14em; color:var(--cinnabar);}
+      .dim-row{display:grid; grid-template-columns:52px 1fr 34px; align-items:center; gap:10px; margin:7px 0; font-size:13.5px;}
+      .dim-row .lb{color:var(--ink-soft); letter-spacing:.14em;}
+      .dim-row .bar{height:7px; border-radius:99px; background:var(--paper-2); overflow:hidden;}
+      .dim-row .bar i{display:block; height:100%; width:0; border-radius:99px; background:linear-gradient(90deg,var(--gold-soft),var(--gold)); transition:width .9s ease;}
+      .dim-row.top .bar i{background:linear-gradient(90deg,var(--cinnabar),var(--gold));}
+      .dim-row .vl{text-align:right; color:var(--ink-faint); font-size:12.5px;}
+      .second-match{margin-top:18px; font-size:13.5px; color:var(--ink-faint);}
+      .second-match b{color:var(--ink-soft);}
+      .result-actions{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:26px;}
+      .btn-again{
+        border:none; border-radius:10px; background:linear-gradient(180deg,var(--cinnabar),var(--cinnabar-deep));
+        color:#fdf6e3; font-size:16.5px; font-weight:700; letter-spacing:.2em; text-indent:.2em; padding:13px 38px;
+        box-shadow:0 8px 20px rgba(126,31,26,.28);
+      }
+      .btn-top{
+        background:none; border:1.5px solid var(--gold); color:var(--ink); border-radius:10px;
+        font-size:16.5px; letter-spacing:.2em; text-indent:.2em; padding:13px 30px;
+      }
+      .share-hint{text-align:center; margin-top:18px; font-size:13.5px; color:var(--ink-faint);}
+      .share-hint b{color:var(--cinnabar); font-weight:700;}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+
+      <!-- ================= 首页 ================= -->
+      <section class="screen active" id="screen-home">
+        <div class="hero">
+          <div class="seal">魂</div>
+          <p class="hero-kicker">趣 味 人 格 测 试</p>
+          <h1>测测你的灵魂<br />对应哪位<em>中国历史人物</em></h1>
+          <div class="rule"><span>❦</span></div>
+          <p class="hero-sub">不考历史，不背年代。40 道题，只问你的日常习惯、处事方式、社交模式与情绪反应——答完之后，看看千年之前，谁和你是一种人。</p>
+          <div class="hero-meta">
+            <span>共 40 题 · 约 4 分钟</span>
+            <span>10 种灵魂归宿</span>
+            <span>谋士 · 帝王 · 文人 · 侠客 · 诗人 · 将领 · 隐士</span>
+          </div>
+          <button class="btn-main" id="btn-start" type="button">开始测试</button>
+          <p class="hero-note">凭第一直觉选，没有对错，更没有标准答案。</p>
+        </div>
+
+        <div class="scroll-card">
+          <h2>这套题怎么测</h2>
+          <p>每道题的四个选项，分别对应「谋略、权柄、文雅、诗情、担当、淡泊、侠义」七种性格底色。40 题答完，系统按你的综合得分匹配最像的历史人物，并给出性格特点、匹配理由、隐藏优势和一枚趣味彩蛋。本测试只为好玩，不是历史考试，也不是专业心理诊断。</p>
+        </div>
+
+        <div class="figures">
+          <h2>— 你 可 能 遇 见 的 灵 魂 —</h2>
+          <div class="fig-grid">
+            <div class="fig"><b>诸葛亮</b><i>谋士</i><small>运筹帷幄，未出茅庐先定三分</small></div>
+            <div class="fig"><b>李世民</b><i>帝王</i><small>心有山河，进退皆是格局</small></div>
+            <div class="fig"><b>武则天</b><i>帝王</i><small>不问出身，只问本事</small></div>
+            <div class="fig"><b>曹操</b><i>枭雄</i><small>宁可我负天下人，休教天下人负我</small></div>
+            <div class="fig"><b>苏轼</b><i>文人</i><small>一生起落，吃好喝好心也宽</small></div>
+            <div class="fig"><b>李清照</b><i>才女</i><small>词压江南，心比金石还硬</small></div>
+            <div class="fig"><b>李白</b><i>诗人</i><small>天子呼来不上船，自由比命贵</small></div>
+            <div class="fig"><b>辛弃疾</b><i>侠客</i><small>把栏杆拍遍，快意与家国都要</small></div>
+            <div class="fig"><b>岳飞</b><i>将领</i><small>认准的事，三十功名也不回头</small></div>
+            <div class="fig"><b>陶渊明</b><i>隐士</i><small>不为五斗米折腰，菊花东篱下</small></div>
+          </div>
+        </div>
+
+        <p class="disclaimer">趣味娱乐测试，结果仅供一笑与自照，不构成任何心理诊断或人生建议。</p>
+      </section>
+
+      <!-- ================= 答题页 ================= -->
+      <section class="screen" id="screen-quiz">
+        <div class="quiz-top">
+          <div class="quiz-count">第 <b id="q-now">1</b> 题 <span style="color:var(--ink-faint)">/ 共 40 题</span></div>
+          <div class="quiz-cat" id="q-cat">日常习惯</div>
+        </div>
+        <div class="progress"><i id="q-bar"></i></div>
+        <div class="q-card" id="q-card">
+          <div class="q-num" id="q-num">其一</div>
+          <p class="q-text" id="q-text"></p>
+          <div class="opts" id="q-opts"></div>
+        </div>
+        <div class="quiz-nav">
+          <button class="btn-ghost" id="btn-prev" type="button">← 上一题</button>
+          <span class="quiz-tip">选完自动进入下一题</span>
+        </div>
+      </section>
+
+      <!-- ================= 结果页 ================= -->
+      <section class="screen" id="screen-result">
+        <div class="result-frame" id="result-card">
+          <div class="result-inner">
+            <div class="seal result-seal" id="r-seal">灵魂<br />同源</div>
+            <p class="result-kicker">你 的 灵 魂 对 应</p>
+            <div><span class="result-type" id="r-type"></span></div>
+            <h2 class="result-name" id="r-name"></h2>
+            <p class="result-era" id="r-era"></p>
+            <p class="match-line">灵魂共鸣度 <b id="r-match"></b> %</p>
+            <p class="tagline" id="r-tagline"></p>
+            <p class="result-quote" id="r-quote"></p>
+            <div class="traits" id="r-traits"></div>
+
+            <div class="r-block">
+              <h3><span class="n">壹</span>为什么是 TA</h3>
+              <p id="r-reason"></p>
+            </div>
+            <div class="r-block">
+              <h3><span class="n">贰</span>你的隐藏优势</h3>
+              <p id="r-hidden"></p>
+            </div>
+            <div class="r-block">
+              <h3><span class="n">叁</span>趣味彩蛋</h3>
+              <p id="r-egg"></p>
+            </div>
+
+            <div class="dims">
+              <h3>你的七维性格底色</h3>
+              <div id="r-dims"></div>
+            </div>
+            <p class="second-match" id="r-second"></p>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button class="btn-again" id="btn-again" type="button">重新测试</button>
+          <button class="btn-top" id="btn-home" type="button">回到首页</button>
+        </div>
+        <p class="share-hint">觉得准？<b>截下这张结果卡</b>，发给朋友猜猜 TA 是谁——小红书、朋友圈都合适。</p>
+        <p class="disclaimer">《测测你的灵魂对应哪位中国历史人物》· 趣味测试，结果仅供娱乐。</p>
+      </section>
+
+    </div>
+
+    <script>
+    "use strict";
+    /* 维度: mou 谋略 / wang 权柄 / wen 文雅 / shi 诗情 / jiang 担当 / yin 淡泊 / xia 侠义 */
+    var DIMS = [
+      {k:"mou",  n:"谋略"},
+      {k:"wang", n:"权柄"},
+      {k:"wen",  n:"文雅"},
+      {k:"shi",  n:"诗情"},
+      {k:"jiang",n:"担当"},
+      {k:"yin",  n:"淡泊"},
+      {k:"xia",  n:"侠义"}
+    ];
+
+    var QUESTIONS = [
+      /* —— 日常习惯 1-8 —— */
+      {cat:"日常习惯", q:"周末终于空出来一整天，你最想怎么过？", opts:[
+        {t:"睡到自然醒，泡茶看云，谁也别找我", s:{yin:2, shi:1}},
+        {t:"约上三五好友，吃饭喝酒热闹一场", s:{xia:2, wang:1}},
+        {t:"把下周的计划列出来，心里有数才踏实", s:{mou:2, jiang:1}},
+        {t:"背个小包出门，走到哪儿算哪儿", s:{shi:2, xia:1}}]},
+      {cat:"日常习惯", q:"你的手机桌面 / 房间桌面，通常是什么状态？", opts:[
+        {t:"东西分门别类，一切井井有条", s:{mou:2, wen:1}},
+        {t:"乱中有序，只有我自己找得到", s:{shi:2, yin:1}},
+        {t:"极简，留白越多越舒服", s:{yin:2, wen:1}},
+        {t:"摆满喜欢的东西，热闹才有安全感", s:{wang:2, xia:1}}]},
+      {cat:"日常习惯", q:"早上醒来第一件事，你一般会？", opts:[
+        {t:"先想一遍今天最重要的三件事", s:{jiang:2, mou:1}},
+        {t:"刷会儿手机，看看世界发生了什么", s:{wen:2, wang:1}},
+        {t:"不急，躺一会儿，让脑子慢慢开机", s:{yin:2, shi:1}},
+        {t:"立刻起床行动，磨蹭最浪费时间", s:{wang:2, jiang:1}}]},
+      {cat:"日常习惯", q:"点外卖 / 去饭馆，你选菜的方式是？", opts:[
+        {t:"看评分、销量、评价，综合最优解", s:{mou:2, wen:1}},
+        {t:"哪家人多排队去哪家，群众的眼光不会错", s:{wang:2, xia:1}},
+        {t:"专挑没吃过的，菜单就是用来探险的", s:{shi:2, xia:1}},
+        {t:"老几样来回吃，熟悉的味道最治愈", s:{yin:2, jiang:1}}]},
+      {cat:"日常习惯", q:"出门旅行，你的行程风格更像？", opts:[
+        {t:"攻略做到小时级，交通住宿全订好", s:{mou:2, jiang:1}},
+        {t:"只定大方向，到了当地随缘逛", s:{shi:2, yin:1}},
+        {t:"必须打卡地标和名场面，来都来了", s:{wang:2, wen:1}},
+        {t:"找个小地方住下来，像当地人一样过几天", s:{yin:2, wen:1}}]},
+      {cat:"日常习惯", q:"攒下一笔闲钱，你的第一反应是？", opts:[
+        {t:"研究一下怎么钱生钱，放着贬值太亏", s:{mou:2, wang:1}},
+        {t:"买件惦记很久的好东西，犒劳自己", s:{shi:2, wen:1}},
+        {t:"存起来，兜里有粮心里不慌", s:{jiang:2, yin:1}},
+        {t:"请家人朋友吃顿好的，钱花在人身上才值", s:{xia:2, wang:1}}]},
+      {cat:"日常习惯", q:"你的朋友圈 / 社交动态，通常是？", opts:[
+        {t:"很少发，看看别人就好", s:{yin:2, mou:1}},
+        {t:"发风景、美食和读到的好句子", s:{wen:2, shi:1}},
+        {t:"有大事才发，每条都经过斟酌", s:{wang:2, mou:1}},
+        {t:"想到啥发啥，开心最重要", s:{xia:2, shi:1}}]},
+      {cat:"日常习惯", q:"睡前最后一小时，你多半在？", opts:[
+        {t:"复盘今天，顺手记下明天的待办", s:{mou:2, jiang:1}},
+        {t:"看书、听歌，让心慢慢静下来", s:{wen:2, yin:1}},
+        {t:"和重要的人聊聊天", s:{xia:2, shi:1}},
+        {t:"刷短视频，不知不觉就到半夜", s:{shi:2, wang:1}}]},
+
+      /* —— 处事方式 9-16 —— */
+      {cat:"处事方式", q:"手头突然砸来一件麻烦事，你的第一步是？", opts:[
+        {t:"先拆解：最坏结果是什么，手里有什么牌", s:{mou:2, jiang:1}},
+        {t:"先干起来，边做边调整方向", s:{jiang:2, xia:1}},
+        {t:"找靠谱的人商量，三个臭皮匠顶个诸葛亮", s:{wang:2, wen:1}},
+        {t:"深呼吸，先让自己冷静十分钟", s:{yin:2, wen:1}}]},
+      {cat:"处事方式", q:"做一个重要决定时，你最信什么？", opts:[
+        {t:"数据和逻辑，摆在桌上算清楚", s:{mou:2, wang:1}},
+        {t:"直觉，第一感觉往往最准", s:{shi:2, xia:1}},
+        {t:"过来人的经验，少走弯路", s:{wen:2, jiang:1}},
+        {t:"自己的判断，决定了就不后悔", s:{wang:2, jiang:1}}]},
+      {cat:"处事方式", q:"团队里意见吵成一团，你通常是那个？", opts:[
+        {t:"拍板的人：别吵了，按这个来", s:{wang:2, jiang:1}},
+        {t:"调和的人：各退一步，先把事办了", s:{wen:2, xia:1}},
+        {t:"出主意的人：其实还有第三种办法", s:{mou:2, shi:1}},
+        {t:"干活的人：你们定，我负责落地", s:{jiang:2, yin:1}}]},
+      {cat:"处事方式", q:"答应别人的事，哪怕自己吃亏，你会？", opts:[
+        {t:"必须做到，一诺千金不是说说而已", s:{jiang:2, xia:1}},
+        {t:"看情况，实在做不到要提前说清楚", s:{mou:2, wen:1}},
+        {t:"量力而行，当初就不该轻易答应", s:{yin:2, mou:1}},
+        {t:"想办法变通，面子过得去就行", s:{wang:2, shi:1}}]},
+      {cat:"处事方式", q:"遇到一个明显比你强的对手，你的态度是？", opts:[
+        {t:"研究 TA，学 TA，最后超过 TA", s:{mou:2, wang:1}},
+        {t:"正面刚，输了也比躲着强", s:{jiang:2, xia:1}},
+        {t:"绕开锋芒，在别的赛道赢回来", s:{yin:2, mou:1}},
+        {t:"欣赏 TA，甚至想和 TA 交个朋友", s:{wen:2, shi:1}}]},
+      {cat:"处事方式", q:"计划被突发情况打乱，你会？", opts:[
+        {t:"迅速切换 B 计划，我永远有备选", s:{mou:2, jiang:1}},
+        {t:"有点烦躁，但很快能调整过来", s:{wen:2, yin:1}},
+        {t:"顺势而为，说不定有意外惊喜", s:{shi:2, yin:1}},
+        {t:"稳住局面，先安抚身边人的情绪", s:{wang:2, xia:1}}]},
+      {cat:"处事方式", q:"手里有个好机会，但风险也不小，你会？", opts:[
+        {t:"先算清楚最坏能亏多少，亏得起就上", s:{mou:2, wang:1}},
+        {t:"机会不等人，先抓住再说", s:{xia:2, jiang:1}},
+        {t:"再观察一阵，好机会不差这几天", s:{yin:2, wen:1}},
+        {t:"拉上信得过的人一起，分担也分利", s:{wang:2, xia:1}}]},
+      {cat:"处事方式", q:"你更认同哪种做事节奏？", opts:[
+        {t:"谋定而后动，想清楚再出手", s:{mou:2, yin:1}},
+        {t:"雷厉风行，想到就干，干完再说", s:{jiang:2, wang:1}},
+        {t:"不疾不徐，把每一步做扎实", s:{wen:2, jiang:1}},
+        {t:"灵感驱动，状态来了挡都挡不住", s:{shi:2, xia:1}}]},
+
+      /* —— 社交模式 17-24 —— */
+      {cat:"社交模式", q:"在聚会上，你通常是？", opts:[
+        {t:"气氛中心，话题由我带起来", s:{wang:2, xia:1}},
+        {t:"安静听别人说，偶尔一句话点到位", s:{mou:2, wen:1}},
+        {t:"和两三个聊得来的深聊一整晚", s:{wen:2, yin:1}},
+        {t:"随性穿梭，开心就多待会儿，无聊就撤", s:{shi:2, xia:1}}]},
+      {cat:"社交模式", q:"朋友遇到难处向你开口，你会？", opts:[
+        {t:"二话不说，能帮的立刻帮", s:{xia:2, jiang:1}},
+        {t:"先听完，再帮 TA 一起想办法", s:{mou:2, wen:1}},
+        {t:"帮，但会把丑话说在前面", s:{wang:2, mou:1}},
+        {t:"默默帮完，不声张也不邀功", s:{yin:2, jiang:1}}]},
+      {cat:"社交模式", q:"有人当众让你下不来台，你会？", opts:[
+        {t:"当场怼回去，面子不能丢", s:{xia:2, wang:1}},
+        {t:"笑笑带过，回头再说", s:{wen:2, yin:1}},
+        {t:"记在心里，日后让实力说话", s:{mou:2, jiang:1}},
+        {t:"四两拨千斤，用幽默化解掉", s:{shi:2, wen:1}}]},
+      {cat:"社交模式", q:"你交朋友最看重对方什么？", opts:[
+        {t:"仗义，关键时刻靠得住", s:{xia:2, jiang:1}},
+        {t:"聊得来，三观合拍有深度", s:{wen:2, mou:1}},
+        {t:"有趣，和 TA 在一起不无聊", s:{shi:2, xia:1}},
+        {t:"真诚不装，相处不累", s:{yin:2, wen:1}}]},
+      {cat:"社交模式", q:"在群体里，你更享受哪种位置？", opts:[
+        {t:"带头的人，大家跟着我走", s:{wang:2, jiang:1}},
+        {t:"军师的位置，出主意但不站 C 位", s:{mou:2, yin:1}},
+        {t:"被需要的人，有事第一个想到我", s:{jiang:2, xia:1}},
+        {t:"自由人，不被任何圈子绑住", s:{shi:2, yin:1}}]},
+      {cat:"社交模式", q:"和人意见不合时，你习惯？", opts:[
+        {t:"把道理摆出来，说服为止", s:{wang:2, mou:1}},
+        {t:"求同存异，不争输赢", s:{yin:2, wen:1}},
+        {t:"先听对方说完，也许 TA 有道理", s:{wen:2, mou:1}},
+        {t:"行动证明，嘴上赢了没意思", s:{jiang:2, xia:1}}]},
+      {cat:"社交模式", q:"很久没联系的老朋友突然找你，你会？", opts:[
+        {t:"热情回应，像从没分开过", s:{xia:2, shi:1}},
+        {t:"先想想：TA 是不是有事找我", s:{mou:2, wang:1}},
+        {t:"淡淡地聊几句，过去了就过去了", s:{yin:2, wen:1}},
+        {t:"主动张罗，把老朋友们都聚起来", s:{wang:2, jiang:1}}]},
+      {cat:"社交模式", q:"被人误解了，你的第一反应是？", opts:[
+        {t:"立刻解释清楚，不能背黑锅", s:{jiang:2, xia:1}},
+        {t:"不解释，日久见人心", s:{yin:2, mou:1}},
+        {t:"看是谁：重要的人才值得解释", s:{wang:2, wen:1}},
+        {t:"自嘲一句化解，清者自清", s:{shi:2, wen:1}}]},
+
+      /* —— 情绪反应 25-32 —— */
+      {cat:"情绪反应", q:"努力很久的事还是搞砸了，你会？", opts:[
+        {t:"复盘到底错在哪，下次绝不再犯", s:{mou:2, jiang:1}},
+        {t:"难受一晚，第二天照样满血复活", s:{wen:2, shi:1}},
+        {t:"找个没人的地方待一会儿，自己消化", s:{yin:2, wen:1}},
+        {t:"约朋友吃顿好的，天塌不下来", s:{xia:2, wang:1}}]},
+      {cat:"情绪反应", q:"被人夸奖时，你心里真实的想法是？", opts:[
+        {t:"开心，但会想想自己配不配得上", s:{wen:2, yin:1}},
+        {t:"理所应当，我的实力摆在那儿", s:{wang:2, jiang:1}},
+        {t:"有点不好意思，赶紧岔开话题", s:{yin:2, xia:1}},
+        {t:"记下来，这是继续努力的燃料", s:{mou:2, jiang:1}}]},
+      {cat:"情绪反应", q:"压力大到喘不过气时，你的解压方式是？", opts:[
+        {t:"运动、出汗、睡一觉", s:{jiang:2, xia:1}},
+        {t:"吃顿好的，或者买点喜欢的东西", s:{shi:2, wen:1}},
+        {t:"去大自然里走走，山水最疗愈", s:{yin:2, shi:1}},
+        {t:"把烦恼写下来，写完就轻了一半", s:{wen:2, mou:1}}]},
+      {cat:"情绪反应", q:"看到感人的电影 / 故事，你会？", opts:[
+        {t:"眼泪说来就来，完全控制不住", s:{shi:2, xia:1}},
+        {t:"心里翻江倒海，表面波澜不惊", s:{mou:2, wen:1}},
+        {t:"感慨一会儿，很快回到现实", s:{jiang:2, wang:1}},
+        {t:"想通很多事，觉得人生值得", s:{yin:2, wen:1}}]},
+      {cat:"情绪反应", q:"你生气时的样子更像？", opts:[
+        {t:"当场爆发，来得快去得也快", s:{xia:2, jiang:1}},
+        {t:"冷处理，不说话但气场全开", s:{wang:2, mou:1}},
+        {t:"很少真生气，大多一笑了之", s:{yin:2, wen:1}},
+        {t:"越生气越冷静，事后算总账", s:{mou:2, wang:1}}]},
+      {cat:"情绪反应", q:"深夜 emo 的时候，你最常想的是？", opts:[
+        {t:"人生到底图个啥", s:{shi:2, yin:1}},
+        {t:"还没做完的事和没走完的路", s:{jiang:2, mou:1}},
+        {t:"想念某些人某些时光", s:{wen:2, xia:1}},
+        {t:"很少 emo，倒头就睡是福气", s:{wang:2, yin:1}}]},
+      {cat:"情绪反应", q:"面对突如其来的好消息，你会？", opts:[
+        {t:"先确认是真的，再开心也不迟", s:{mou:2, wen:1}},
+        {t:"立刻分享给最亲近的人", s:{xia:2, shi:1}},
+        {t:"开心，但很快开始想下一步", s:{wang:2, jiang:1}},
+        {t:"一个人偷着乐，心里美滋滋", s:{yin:2, shi:1}}]},
+      {cat:"情绪反应", q:"你觉得哪种状态最让你有安全感？", opts:[
+        {t:"一切尽在掌握，局面由我主导", s:{wang:2, mou:1}},
+        {t:"兜里有钱，身边有靠得住的人", s:{jiang:2, xia:1}},
+        {t:"内心安定，外面再乱也不慌", s:{yin:2, wen:1}},
+        {t:"随时有退路，进退都不被动", s:{mou:2, yin:1}}]},
+
+      /* —— 兴趣偏好与价值观 33-40 —— */
+      {cat:"兴趣偏好", q:"如果能免费学一样本事，你选？", opts:[
+        {t:"洞察人心的本事，看人一看一个准", s:{mou:2, wang:1}},
+        {t:"一门拿得出手的才艺，写字画画弹琴都行", s:{wen:2, shi:1}},
+        {t:"防身的功夫，关键时刻能护住自己和家人", s:{jiang:2, xia:1}},
+        {t:"种菜钓鱼的手艺，日子过得有滋有味", s:{yin:2, shi:1}}]},
+      {cat:"兴趣偏好", q:"选一种最想住的房子，你选？", opts:[
+        {t:"市中心大平层，繁华尽在脚下", s:{wang:2, wen:1}},
+        {t:"山脚下的小院，推门见青山", s:{yin:2, shi:1}},
+        {t:"江边的高层，夜里看万家灯火", s:{shi:2, wang:1}},
+        {t:"老城区的四合院，住着一大家子人", s:{xia:2, jiang:1}}]},
+      {cat:"兴趣偏好", q:"这几样东西，只能留一样陪你过下半生？", opts:[
+        {t:"一屋子书，精神世界不能荒", s:{wen:2, yin:1}},
+        {t:"一壶好酒，愁也喝喜也喝", s:{shi:2, xia:1}},
+        {t:"一把趁手的工具 / 武器，靠本事吃饭", s:{jiang:2, mou:1}},
+        {t:"一群老友，热闹就是福气", s:{wang:2, xia:1}}]},
+      {cat:"兴趣偏好", q:"你更欣赏哪种人生？", opts:[
+        {t:"建功立业，让后人记住名字", s:{wang:2, jiang:1}},
+        {t:"快意潇洒，这一辈子不白活", s:{shi:2, xia:1}},
+        {t:"平平淡淡，吃好睡好没烦恼", s:{yin:2, wen:1}},
+        {t:"深藏功名，在幕后左右大局", s:{mou:2, yin:1}}]},
+      {cat:"价值取向", q:"如果人生是一场考试，你最想拿高分的是？", opts:[
+        {t:"事业成就，被人认可和尊重", s:{wang:2, jiang:1}},
+        {t:"内心自由，不被任何东西绑架", s:{shi:2, yin:1}},
+        {t:"人品口碑，走到哪儿都抬得起头", s:{jiang:2, wen:1}},
+        {t:"眼界见识，看过更大的世界", s:{mou:2, wen:1}}]},
+      {cat:"价值取向", q:"朋友和利益冲突时，你更倾向于？", opts:[
+        {t:"朋友优先，钱可以再赚", s:{xia:2, jiang:1}},
+        {t:"把账算清楚，反而能长久做朋友", s:{mou:2, wang:1}},
+        {t:"看人：值得的人帮，不值得的撤", s:{wang:2, mou:1}},
+        {t:"尽量两全，实在不行就吃点亏", s:{wen:2, yin:1}}]},
+      {cat:"价值取向", q:"你最怕哪种状态？", opts:[
+        {t:"碌碌无为，一辈子没留下点什么", s:{wang:2, jiang:1}},
+        {t:"身不由己，被生活推着走", s:{shi:2, xia:1}},
+        {t:"身边没人懂我，孤独到老", s:{wen:2, yin:1}},
+        {t:"关键时刻掉链子，护不住在乎的人", s:{jiang:2, xia:1}}]},
+      {cat:"价值取向", q:"最后一题：如果能给十年前的自己留一句话，你会说？", opts:[
+        {t:"别急，你的每一步都算数", s:{mou:2, jiang:1}},
+        {t:"大胆一点，你比想象中更强", s:{wang:2, xia:1}},
+        {t:"开心最重要，别为难自己", s:{shi:2, yin:1}},
+        {t:"对身边的人好一点，他们最重要", s:{xia:2, wen:1}}]}
+    ];
+
+    var FIGURES = {
+      zhuge:{ name:"诸葛亮", type:"谋士型灵魂", era:"三国 · 蜀汉丞相",
+        tagline:"你不是不争，你是早把棋盘看穿了三步以后。",
+        quote:"「非淡泊无以明志，非宁静无以致远。」",
+        traits:["深谋远虑","临危不乱","算无遗策","低调务实"],
+        reason:"你的答案里，「谋略」和「担当」一路领跑：遇事第一反应是拆解局面、盘点手牌，做决定信数据和逻辑，计划被打乱时永远有 B 计划。你不爱站 C 位，却总在幕后把整件事盘活——这正是诸葛亮的活法：羽扇纶巾只是外表，真正的本事，是让所有人觉得「有他在就稳了」。",
+        hidden:"你的隐藏优势是「预判力」。别人还在处理眼前的问题，你已经想到了三步之后的连锁反应。团队里你可能不是声音最大的，但关键时刻大家第一个想问的人，一定是你。",
+        egg:"趣味彩蛋：诸葛亮其实是个发明家——木牛流马、孔明灯、诸葛连弩都出自他手。就像你，表面是动脑子的，背地里动手能力也没输过谁。"
+      },
+      lishimin:{ name:"李世民", type:"帝王型灵魂", era:"唐 · 唐太宗",
+        tagline:"你天生是带队的命，山河有多大，心就有多大。",
+        quote:"「以人为镜，可以明得失。」",
+        traits:["格局开阔","用人不疑","能听逆耳言","天生领袖"],
+        reason:"你的「权柄」得分一骑绝尘，「谋略」紧随其后：你习惯站在全局看问题，聚会里自然成为中心，遇到分歧敢拍板，也愿意为自己的决定兜底。你不是恋权，你是真心享受「把一群人拧成一股绳、把一件事做成」的感觉——这是李世民式的领导力：打天下靠本事，坐天下靠胸怀。",
+        hidden:"你的隐藏优势是「聚人」。你身上有一种让人愿意跟随的气场：大方、果断、不记小仇。哪怕暂时不在领导位置，身边人也会不自觉地把你当主心骨。",
+        egg:"趣味彩蛋：李世民是历史上最能打的皇帝之一，也是写字、骑射、诗文样样拿得出手的「全能选手」。就像你，要么不做，要做就得有点排面。"
+      },
+      wuzetian:{ name:"武则天", type:"帝王型灵魂", era:"唐 · 武周女皇",
+        tagline:"规则若不为你开门，你就自己把门拆了。",
+        quote:"她自立无字碑：功过是非，留给后人评说。",
+        traits:["野心清醒","不认命","识人用人","内核极稳"],
+        reason:"你的「权柄」与「谋略」双高，而且「文雅」也不低——你既想赢，又懂怎么赢得漂亮。你做决定靠自己的判断，不轻易被流言和误解动摇，被人质疑时不急着解释，而是用结果说话。这种「不问出身、只问本事」的狠劲与清醒，正是武则天从后宫走到龙椅的全部秘密。",
+        hidden:"你的隐藏优势是「抗压式成长」。越是没人看好你，你越能憋出一股劲。别人眼里的绝境，在你这里往往是翻盘的起点。",
+        egg:"趣味彩蛋：武则天发明了不少新字，还亲自选拔人才——历史上第一位女状元的传说就与她有关。就像你，自己往上走的时候，也不忘给别人开一扇门。"
+      },
+      caocao:{ name:"曹操", type:"枭雄型灵魂", era:"东汉末 · 魏武帝",
+        tagline:"世人笑你太疯癫，你笑世人看不穿——先赢下来再说。",
+        quote:"「老骥伏枥，志在千里。」",
+        traits:["务实果决","爱才如命","不拘小节","越挫越勇"],
+        reason:"你的组合很特别：「权柄」强势、「侠义」和「谋略」同时在线。你信奉「把账算清楚反而长久」，机会面前敢下注，输了能复盘、能认错、能立刻再战。你不装清高，也不端着，喜欢就是喜欢，想要就去争取——曹操那句「宁我负人，毋人负我」说的不是坏，是不肯把命运交到别人手里的倔强。",
+        hidden:"你的隐藏优势是「用人」。你看人极准，且真舍得给机会、给位置。跟着你的人往往死心塌地，因为你从不亏待真心办事的人。",
+        egg:"趣味彩蛋：曹操不只是军事家，还是建安文学的领袖，《观沧海》就是他写的。粗中有细、武能安邦文能提笔——这不就是你吗？"
+      },
+      su:{ name:"苏轼", type:"文人型灵魂", era:"宋 · 东坡先生",
+        tagline:"天大的事，也不能耽误你吃好这一顿。",
+        quote:"「人间有味是清欢。」",
+        traits:["通透豁达","自愈力强","热爱生活","幽默成性"],
+        reason:"你的「文雅」遥遥领先，「淡泊」和「诗情」相伴：你遇挫会难受，但睡一觉、吃顿好的就能满血复活；被人针对时倾向于笑笑带过，用幽默四两拨千斤。苏轼一生被贬三次，越贬越远，却把黄州写成东坡肉、把惠州过成小日子——你身上这股「把苦日子过出甜味」的本事，就是他留给你的灵魂印记。",
+        hidden:"你的隐藏优势是「情绪复原力」。别人陷在情绪里出不来，你总能找到一个出口：一顿饭、一首歌、一趟散步。你不是没心没肺，你是真的想通了。",
+        egg:"趣味彩蛋：苏轼还是个顶级美食博主——东坡肉、东坡肘子都因他得名，被贬到哪儿就把哪儿吃成美食地图。吃货不可怕，就怕吃货有文化，说的就是你俩。"
+      },
+      liqingzhao:{ name:"李清照", type:"才女型灵魂", era:"宋 · 易安居士",
+        tagline:"外表温婉好说话，心里那杆秤，比谁都硬。",
+        quote:"「生当作人杰，死亦为鬼雄。」",
+        traits:["才情出众","外柔内刚","记忆力惊人","爱憎分明"],
+        reason:"你的「文雅」与「诗情」双双高分，又带着一股不服输的劲：你感性，看电影会哭，朋友圈爱发好句子；但你绝不是软弱的人——是非面前你有自己的判断，被误解了会看人下菜碟，重要的人和事，你寸步不让。李清照前半生写尽婉约，后半生国破家亡依然笔锋如刀，这份柔中带刚，和你严丝合缝。",
+        hidden:"你的隐藏优势是「审美与表达」。同样的事，你总能说出别人说不出的那句话。文字、品味、共情力，是你在人群里悄悄发光的武器。",
+        egg:"趣味彩蛋：李清照是骨灰级收藏家兼「赌神」——她写过专著研究打马博戏，自称逢赌必赢。别被你的文艺外表骗了，你认真起来，赢面大得很。"
+      },
+      libai:{ name:"李白", type:"诗人型灵魂", era:"唐 · 诗仙",
+        tagline:"世界再大，也关不住一个想自由的人。",
+        quote:"「天生我材必有用，千金散尽还复来。」",
+        traits:["自由至上","灵感爆棚","真性情","不受束缚"],
+        reason:"你的「诗情」一枝独秀，「侠义」紧随其后：旅行只定大方向，做事靠状态和灵感，最怕身不由己，最向往「这一辈子不白活」。你花钱不抠、交友不装，开心要喝、难过也要喝——哦不，是开心要庆祝、难过要自愈。李白一生没当过大官，却活成了中国人心里自由的代名词。你也一样：任何框住你的东西，最后都会被你推开。",
+        hidden:"你的隐藏优势是「感染力」。你对生活的热情是会传染的：和你在一起，平淡的日子都能冒出火花。你的即兴和创造力，往往在最不按常理出牌时最耀眼。",
+        egg:"趣味彩蛋：李白不只会写诗，剑术在唐朝能排进前列，师从名剑客裴旻。文能提笔写盛唐，武能仗剑走天涯——你的「诗情」里，可一直藏着一把剑。"
+      },
+      xinqiji:{ name:"辛弃疾", type:"侠客型灵魂", era:"宋 · 稼轩居士",
+        tagline:"你拍遍了栏杆，也没学会对不平事闭嘴。",
+        quote:"「了却君王天下事，赢得生前身后名。」",
+        traits:["嫉恶如仇","仗义热血","文武双全","至情至性"],
+        reason:"你的「侠义」得分最高，「担当」和「诗情」并重：朋友有难你二话不说，有人受欺负你忍不住出头，做事认死理、讲义气，情绪上来得快去得也快。辛弃疾二十多岁就敢率五十骑兵闯五万人的敌营活捉叛徒，一生想收复山河却报国无门，只好把满腔热血写进词里。你和他一样：心里装着大义，手边护着小家，栏杆拍遍，初心不改。",
+        hidden:"你的隐藏优势是「行动力与号召力」。别人还在犹豫要不要管闲事，你已经站出来了。这种「第一个站出来」的气质，会让越来越多的人愿意站在你身后。",
+        egg:"趣味彩蛋：辛弃疾的词里藏着大量「气不过」——他连喝醉了都要「醉里挑灯看剑」。你那股看不惯就想管的劲儿，八百年前就有人替你写进词里了。"
+      },
+      yuefei:{ name:"岳飞", type:"将领型灵魂", era:"宋 · 民族英雄",
+        tagline:"你答应的事，拼了命也会做到——这是你的规矩。",
+        quote:"「三十功名尘与土，八千里路云和月。」",
+        traits:["一诺千金","自律极强","护短到底","目标感爆棚"],
+        reason:"你的「担当」稳居第一，「谋略」与「侠义」护航：你答应的事砸锅卖铁也要办到，最怕关键时刻掉链子、护不住在乎的人；做事有计划、有纪律，越难的任务反而越让你兴奋。岳飞治军「冻死不拆屋，饿死不掳掠」，靠的不是狠，是把规矩刻进骨子里。你也是这样的人：平时话不多，但所有人都知道——你靠得住。",
+        hidden:"你的隐藏优势是「可托付」。在这个满嘴跑火车的世界里，「说到做到」是最稀缺的信用。和你共事过的人，下次有大事，第一个想到的还是你。",
+        egg:"趣味彩蛋：岳飞不只是武将，还写得一手好字、填得一手好词，《满江红》传唱近千年。原来最硬的将军，心里也住着最柔软的家国情怀——和你一样。"
+      },
+      taoyuanming:{ name:"陶渊明", type:"隐士型灵魂", era:"东晋 · 五柳先生",
+        tagline:"全世界都在赶路，你偏要停下来看看菊花。",
+        quote:"「采菊东篱下，悠然见南山。」",
+        traits:["内心安定","不慕名利","自得其乐","边界感强"],
+        reason:"你的「淡泊」一骑绝尘，「文雅」相伴左右：你不爱凑热闹，不慕 C 位，最享受一个人喝茶看云、把小日子过出滋味；被误解了懒得解释，压力大了就去大自然里走走。陶渊明做官八十多天就辞职回家种田，穷得叮当响也不肯为五斗米折腰——不是他没本事，是他比谁都清楚自己要什么。你这份「不慌不忙的清醒」，就是他跨越千年的同款灵魂。",
+        hidden:"你的隐藏优势是「定力」。潮流来了又去，你始终按自己的节奏走。这种不被外界裹挟的稳定感，会让你在长跑型的人生里，笑到最后。",
+        egg:"趣味彩蛋：陶渊明爱酒成痴，家里穷到揭不开锅，朋友送的酿酒钱他转身全酿了酒。但他写下的《桃花源记》，成了所有中国人心里那个回不去的理想乡——包括你心里的那个。"
+      }
+    };
+
+    var CN_NUM = ["其一","其二","其三","其四","其五","其六","其七","其八","其九","其十",
+      "十一","十二","十三","十四","十五","十六","十七","十八","十九","二十",
+      "廿一","廿二","廿三","廿四","廿五","廿六","廿七","廿八","廿九","三十",
+      "卅一","卅二","卅三","卅四","卅五","卅六","卅七","卅八","卅九","四十"];
+    var LETTERS = ["A","B","C","D"];
+
+    var state = { idx:0, answers:new Array(QUESTIONS.length).fill(-1), lock:false };
+
+    function $(id){ return document.getElementById(id); }
+    function show(screenId){
+      var screens = document.querySelectorAll(".screen");
+      for (var i=0;i<screens.length;i++) screens[i].classList.remove("active");
+      $(screenId).classList.add("active");
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+
+    function renderQuestion(){
+      var i = state.idx, item = QUESTIONS[i];
+      $("q-now").textContent = i+1;
+      $("q-cat").textContent = item.cat;
+      $("q-bar").style.width = ((i)/QUESTIONS.length*100) + "%";
+      $("q-num").textContent = CN_NUM[i];
+      $("q-text").textContent = item.q;
+      var box = $("q-opts");
+      box.innerHTML = "";
+      item.opts.forEach(function(opt, j){
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "opt" + (state.answers[i]===j ? " picked" : "");
+        var mark = document.createElement("span");
+        mark.className = "mark"; mark.textContent = LETTERS[j];
+        var txt = document.createElement("span");
+        txt.textContent = opt.t;
+        btn.appendChild(mark); btn.appendChild(txt);
+        btn.addEventListener("click", function(){ pick(j); });
+        box.appendChild(btn);
+      });
+      $("btn-prev").disabled = (i===0);
+      var card = $("q-card");
+      card.classList.remove("swap"); void card.offsetWidth; card.classList.add("swap");
+    }
+
+    function pick(j){
+      if (state.lock) return;
+      state.answers[state.idx] = j;
+      var opts = $("q-opts").children;
+      for (var k=0;k<opts.length;k++) opts[k].classList.toggle("picked", k===j);
+      state.lock = true;
+      setTimeout(function(){
+        state.lock = false;
+        if (state.idx < QUESTIONS.length-1){
+          state.idx++;
+          renderQuestion();
+        } else {
+          $("q-bar").style.width = "100%";
+          finish();
+        }
+      }, 300);
+    }
+
+    function computeScores(){
+      var scores = {}; DIMS.forEach(function(d){ scores[d.k]=0; });
+      QUESTIONS.forEach(function(item, i){
+        var a = state.answers[i];
+        if (a < 0) return;
+        var s = item.opts[a].s;
+        for (var k in s) scores[k] += s[k];
+      });
+      return scores;
+    }
+
+    function decideFigure(scores){
+      var sorted = DIMS.map(function(d){ return {k:d.k, v:scores[d.k]}; })
+                       .sort(function(a,b){ return b.v - a.v; });
+      var top1 = sorted[0].k, top2 = sorted[1].k;
+      var pair = [top1, top2].sort().join("+");
+      if (pair === "mou+wang"){
+        return (scores.xia + scores.jiang >= scores.wen + scores.yin) ? "caocao" : "wuzetian";
+      }
+      if (pair === "shi+wen"){ return "liqingzhao"; }
+      var map = { mou:"zhuge", wang:"lishimin", wen:"su", shi:"libai",
+                  jiang:"yuefei", yin:"taoyuanming", xia:"xinqiji" };
+      return map[top1];
+    }
+
+    function finish(){
+      var scores = computeScores();
+      var key = decideFigure(scores);
+      var fig = FIGURES[key];
+      var sorted = DIMS.map(function(d){ return {k:d.k, n:d.n, v:scores[d.k]}; })
+                       .sort(function(a,b){ return b.v - a.v; });
+      var maxPossible = QUESTIONS.length * 2;
+      var topVal = sorted[0].v;
+      var match = Math.round(78 + (topVal / maxPossible) * 42);
+      if (match > 98) match = 98;
+
+      $("r-type").textContent = fig.type;
+      $("r-name").textContent = fig.name;
+      $("r-era").textContent = fig.era;
+      $("r-match").textContent = match;
+      $("r-tagline").textContent = fig.tagline;
+      $("r-quote").textContent = fig.quote;
+      $("r-reason").textContent = fig.reason;
+      $("r-hidden").textContent = fig.hidden;
+      $("r-egg").textContent = fig.egg;
+
+      var tr = $("r-traits"); tr.innerHTML = "";
+      fig.traits.forEach(function(t){
+        var s = document.createElement("span"); s.textContent = t; tr.appendChild(s);
+      });
+
+      var maxV = Math.max.apply(null, sorted.map(function(d){ return d.v; })) || 1;
+      var dimsBox = $("r-dims"); dimsBox.innerHTML = "";
+      sorted.forEach(function(d, i){
+        var row = document.createElement("div");
+        row.className = "dim-row" + (i===0 ? " top" : "");
+        var pct = Math.round(d.v / maxV * 100);
+        row.innerHTML = '<span class="lb"></span><span class="bar"><i></i></span><span class="vl"></span>';
+        row.querySelector(".lb").textContent = d.n;
+        row.querySelector(".vl").textContent = pct + "%";
+        dimsBox.appendChild(row);
+        var bar = row.querySelector(".bar i");
+        setTimeout(function(){ bar.style.width = pct + "%"; }, 60 + i*70);
+      });
+
+      var secondName = { mou:"诸葛亮", wang:"李世民", wen:"苏轼", shi:"李白",
+                         jiang:"岳飞", yin:"陶渊明", xia:"辛弃疾" }[sorted[1].k];
+      if (FIGURES[key].name === secondName) secondName = "苏轼";
+      $("r-second").innerHTML = "你的灵魂里，还藏着一点 <b></b> 的影子。";
+      $("r-second").querySelector("b").textContent = secondName;
+
+      show("screen-result");
+    }
+
+    function startQuiz(){
+      state.idx = 0;
+      state.answers = new Array(QUESTIONS.length).fill(-1);
+      state.lock = false;
+      show("screen-quiz");
+      renderQuestion();
+    }
+
+    $("btn-start").addEventListener("click", startQuiz);
+    $("btn-again").addEventListener("click", startQuiz);
+    $("btn-home").addEventListener("click", function(){ show("screen-home"); });
+    $("btn-prev").addEventListener("click", function(){
+      if (state.idx > 0){ state.idx--; renderQuestion(); }
+    });
+    </script>
+  </body>
+</html>
